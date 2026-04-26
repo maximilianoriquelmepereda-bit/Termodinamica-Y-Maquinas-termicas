@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J. Baigorria - 5º4 Electromecánica</title>
+    <script src="https://cdn.tailwindcss.com">
+    // Cuaderno de notas logic
+    const studentId = 'juan';
+    const noteEl = document.getElementById('studentNote');
+    const imgUpload = document.getElementById('imageUpload');
+    const noteImage = document.getElementById('noteImage');
+    const imgContainer = document.getElementById('imagePreviewContainer');
+    const removeImgBtn = document.getElementById('removeImageBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // Load saved data
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedNote = localStorage.getItem(`nota_${studentId}`);
+        const savedImage = localStorage.getItem(`img_${studentId}`);
+        
+        if (savedNote) noteEl.value = savedNote;
+        if (savedImage) {
+            noteImage.src = savedImage;
+            imgContainer.classList.remove('hidden');
+        }
+    });
+
+    // Handle image upload
+    imgUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                noteImage.src = event.target.result;
+                imgContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Remove image
+    removeImgBtn.addEventListener('click', () => {
+        noteImage.src = '';
+        imgContainer.classList.add('hidden');
+        imgUpload.value = '';
+    });
+
+    // Save functionality
+    saveBtn.addEventListener('click', () => {
+        localStorage.setItem(`nota_${studentId}`, noteEl.value);
+        if (!imgContainer.classList.contains('hidden')) {
+            localStorage.setItem(`img_${studentId}`, noteImage.src);
+        } else {
+            localStorage.removeItem(`img_${studentId}`);
+        }
+        
+        // Show success feedback
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-check"></i> ¡Guardado!';
+        saveBtn.style.backgroundColor = '#10B981'; // Tailwind green-500
+        setTimeout(() => {
+            saveBtn.innerHTML = originalText;
+            saveBtn.style.backgroundColor = '#9B5DE5';
+        }, 2000);
+    });
+</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bordo: #C84B31;
+            --azul: #3FB8AF;
+            --amarillo: #F9C74F;
+            --naranja: #F8961E;
+            --lavanda: #9B5DE5;
+            --rosa: #F15BB5;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .bordo-bg { background-color: var(--bordo); }
+        .text-bordo { color: var(--bordo); }
+        .azul-bg { background-color: var(--azul); }
+        .text-azul { color: var(--azul); }
+        .amarillo-bg { background-color: var(--amarillo); }
+        .text-amarillo { color: var(--amarillo); }
+        .naranja-bg { background-color: var(--naranja); }
+        .text-naranja { color: var(--naranja); }
+        .lavanda-bg { background-color: var(--lavanda); }
+        .text-lavanda { color: var(--lavanda); }
+        .rosa-bg { background-color: var(--rosa); }
+        .text-rosa { color: var(--rosa); }
+        .slide-fade { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-soft {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-juan {
+            background: linear-gradient(135deg, #9B5DE5 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-juan:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(155, 93, 229, 0.4);
+        }
+        .cascade-item {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+        .cascade-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .cascade-header {
+            width: 100%;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-align: left;
+            color: #374151;
+            transition: background 0.2s;
+        }
+        .cascade-header:hover { background: rgba(0,0,0,0.02); }
+        .cascade-icon { transition: transform 0.3s ease; color: #9CA3AF; }
+        .cascade-item.active .cascade-icon { transform: rotate(180deg); }
+        .cascade-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
+            padding: 0 18px;
+            font-size: 0.85rem;
+            color: #4B5563;
+            line-height: 1.5;
+        }
+        .cascade-item.active .cascade-body {
+            max-height: 500px;
+            padding: 0 18px 16px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<header class="bg-white/90 backdrop-blur border-b p-4 flex justify-between items-center shadow-sm">
+    <div class="flex items-center gap-3">
+        <div class="p-2 lavanda-bg rounded-lg text-white shadow-lg"><i class="fas fa-microchip"></i></div>
+        <div>
+            <h1 class="text-xs font-bold text-gray-500 uppercase tracking-wider">E.E.S.T. "Ing. Álvarez Condarco"</h1>
+            <p class="text-sm font-black text-gray-800 tracking-tight">5º4 ELECTROMECÁNICA</p>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow flex items-center justify-center p-6">
+    <div class="slide-fade w-full max-w-2xl">
+        <div class="text-center mb-6">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-100 to-violet-100 flex items-center justify-center text-[#9B5DE5] text-3xl shadow-lg">
+                <i class="fas fa-user"></i>
+            </div>
+            <h3 class="text-3xl font-black text-lavanda">J. Baigorria</h3>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">5º4 Electromecánica</p>
+        </div>
+        <div class="w-full">
+            <div class="cascade-item">
+                <button class="cascade-header">
+                    <span><i class="fas fa-microchip mr-2 text-[#9B5DE5]"></i> 1. Sensores de Temperatura</span>
+                    <i class="fas fa-chevron-down cascade-icon"></i>
+                </button>
+                <div class="cascade-body">
+                    Los sensores convierten la magnitud térmica en señales eléctricas. Termocuplas, RTD y termistores son los más utilizados. La Ley Cero garantiza que la calibración del sensor sea válida para cualquier proceso industrial que opere a esa temperatura.
+                </div>
+            </div>
+            <div class="cascade-item">
+                <button class="cascade-header">
+                    <span><i class="fas fa-bolt mr-2 text-[#9B5DE5]"></i> 2. Termocuplas y RTD</span>
+                    <i class="fas fa-chevron-down cascade-icon"></i>
+                </button>
+                <div class="cascade-body">
+                    Las termocuplas aprovechan el efecto Seebeck para generar tensión proporcional a la diferencia de temperatura. Los RTD (Detectores de Temperatura por Resistencia) ofrecen mayor precisión en rangos intermedios, siendo ideales para laboratorios y control de calidad.
+                </div>
+            </div>
+            <div class="cascade-item">
+                <button class="cascade-header">
+                    <span><i class="fas fa-sliders-h mr-2 text-[#9B5DE5]"></i> 3. Control de Procesos</span>
+                    <i class="fas fa-chevron-down cascade-icon"></i>
+                </button>
+                <div class="cascade-body">
+                    Un PLC lee el sensor y actúa sobre resistencias calefactoras, válvulas o ventiladores para mantener la temperatura en el setpoint deseado. Sin la Ley Cero, los setpoints no serían comparables entre diferentes sistemas de control.
+                </div>
+            </div>
+            <div class="cascade-item">
+                <button class="cascade-header">
+                    <span><i class="fas fa-tools mr-2 text-[#9B5DE5]"></i> 4. Mantenimiento de Instrumentos</span>
+                    <i class="fas fa-chevron-down cascade-icon"></i>
+                </button>
+                <div class="cascade-body">
+                    La deriva de los sensores con el tiempo exige calibraciones periódicas. El mantenimiento preventivo basado en la trazabilidad a estándares internacionales (ITS-90) minimiza errores de medición y evita paradas de planta no planificadas.
+                </div>
+            </div>
+        </div>
+        <!-- Mi Cuaderno de Notas -->
+        <div class="mt-8 p-6 bg-white rounded-2xl shadow-lg border-t-4" style="border-color: #9B5DE5;">
+            <h4 class="text-xl font-bold mb-4 flex items-center gap-2" style="color: #9B5DE5;">
+                <i class="fas fa-book"></i> Mi Cuaderno de Notas
+            </h4>
+            <textarea id="studentNote" class="w-full h-32 p-4 border border-gray-200 rounded-xl outline-none resize-none transition-all" style="outline-color: #9B5DE5;" placeholder="Escribe tus apuntes aquí..."></textarea>
+            
+            <div class="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <label class="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-bold text-gray-600 transition-colors flex items-center gap-2 border border-gray-300">
+                    <i class="fas fa-image"></i> Adjuntar Imagen
+                    <input type="file" id="imageUpload" accept="image/*" class="hidden">
+                </label>
+                <button id="saveBtn" class="px-6 py-2 rounded-lg text-sm font-bold shadow-md flex items-center gap-2 text-white" style="background-color: #9B5DE5;">
+                    <i class="fas fa-save"></i> Guardar Notas
+                </button>
+            </div>
+            
+            <div id="imagePreviewContainer" class="mt-4 hidden">
+                <p class="text-xs font-bold text-gray-500 mb-2 uppercase">Imagen Adjunta:</p>
+                <div class="relative inline-block">
+                    <img id="noteImage" src="" alt="Imagen adjunta" class="max-h-48 rounded-lg border border-gray-200 shadow-sm">
+                    <button id="removeImageBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 shadow-md">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-6">
+<a href="Principal.html" class="btn-juan inline-block px-6 py-3 rounded-xl text-sm font-bold shadow-md">
+                <i class="fas fa-arrow-left mr-2"></i> Volver a Inicio
+            </a>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.querySelectorAll('.cascade-header').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.closest('.cascade-item');
+            const isActive = item.classList.contains('active');
+            item.parentElement.querySelectorAll('.cascade-item').forEach(i => i.classList.remove('active'));
+            if (!isActive) item.classList.add('active');
+        });
+    });
+</script>
+
+</body>
+</html>
+
